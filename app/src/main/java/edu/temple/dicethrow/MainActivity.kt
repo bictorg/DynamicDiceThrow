@@ -1,5 +1,6 @@
 package edu.temple.dicethrow
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -19,22 +20,45 @@ The Activity layout files for both Portrait and Landscape are already provided
 */
 
 class MainActivity : AppCompatActivity(), ButtonFragment.ButtonInterface {
+    private val buttonFragment = ButtonFragment()
+    private val dieFragment = DieFragment()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        /* TODO 1: Load fragment(s)
-            - Show only Button Fragment if portrait
-            - show both fragments if Landscape
-          */
+        // Only add fragments if this is the first creation
+        if (savedInstanceState == null) {
+            when (resources.configuration.orientation) {
+                Configuration.ORIENTATION_PORTRAIT -> {
+                    // In portrait, initially show only the button fragment
+                    supportFragmentManager.beginTransaction()
+                        .add(R.id.container1, buttonFragment)
+                        .commit()
+                }
+                Configuration.ORIENTATION_LANDSCAPE -> {
+                    // In landscape, show both fragments side by side
+                    supportFragmentManager.beginTransaction()
+                        .add(R.id.container1, buttonFragment)
+                        .add(R.id.container2, dieFragment)
+                        .commit()
+                }
+            }
+        }
     }
 
-    /* TODO 2: switch fragments if portrait (no need to switch fragments if Landscape)
+    /* TODO COMPLETE 2: switch fragments if portrait (no need to switch fragments if Landscape)
         */
     // Remember to place Fragment transactions on BackStack so then can be reversed
+
     override fun buttonClicked() {
-
+        // Only handle fragment switching in portrait mode
+        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            // Replace button fragment with die fragment and add to back stack
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.container1, dieFragment)
+                .addToBackStack(null)
+                .commit()
+        }
     }
-
-
 }
